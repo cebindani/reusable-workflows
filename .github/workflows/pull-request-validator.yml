@@ -1,0 +1,33 @@
+on:
+  pull_request:
+    types: [opened, edited, labeled, unlabeled, synchronize]
+
+jobs:
+  lint_pr:
+    name: Lint pull request title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lint pull request title
+        uses: jef/conventional-commits-pr-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+  
+  auto_assign:
+    name: Assign PR to creator
+    runs-on: ubuntu-latest
+    steps:
+    - name: Assign PR to creator
+      uses: thomaseizinger/assign-pr-creator-action@v1.0.0
+      if: github.event_name == 'pull_request' && github.event.action == 'opened'
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+  update-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update PR Body
+        uses: chiaretto/github-action-concat-pr-body@master
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          message: "This pull request generated the following artifacts."
+          replace-last-message: true
