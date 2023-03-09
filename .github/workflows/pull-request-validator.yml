@@ -1,5 +1,21 @@
 on:
   workflow_call:
+    inputs:
+      platform-labels:
+        required: false
+        type: string
+        default: "platform::android, platform::flutter, platform::iOS"
+
+      scope-labels:
+        required: false
+        type: string
+        default: "scope::bug, scope::enhancements, scope::feature, scope::project, scope::question"
+
+      state-labels:
+        required: false
+        type: string
+        default: "state::block, state::doing, state::done, state::ready_to_close, state::refining, state::review"
+
     secrets:
       repo-token:
         required: true
@@ -7,34 +23,66 @@ on:
     types: [opened, edited, labeled, unlabeled, synchronize]
 
 jobs:
-  lint-pr:
-    name: Lint pull request title
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Lint pull request title
-        uses: jef/conventional-commits-pr-action@v1
-        with:
-          token: ${{ secrets.repo-token }}
-
   auto-assign:
     name: Assign PR to creator
     runs-on: ubuntu-latest
 
     steps:
-      - name: Assign PR to creator
-        uses: thomaseizinger/assign-pr-creator-action@v1.0.0
-        if: github.event_name == 'pull_request' && github.event.action == 'opened'
-        with:
-          repo-token: ${{ secrets.repo-token }}
+    - name: Assign PR to creator
+      uses: thomaseizinger/assign-pr-creator-action@v1.0.0
+      if: github.event_name == 'pull_request' && github.event.action == 'opened'
+      with:
+        repo-token: ${{ secrets.repo-token }}
+
+  lint-pr:
+    name: Lint pull request title
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Lint pull request title
+      uses: jef/conventional-commits-pr-action@v1
+      with:
+        token: ${{ secrets.repo-token }}
+
+  check-labels:
+    runs-on: ubuntu-latest
+    name: Check required labels
+
+    steps:
+    - name: Check platform label
+      uses: mheap/github-action-required-labels@v3
+      with:
+        mode: exactly
+        count: 1
+        labels: ${{ inputs.platform-labels }}
+        message: "Esse PR está sendo impedido de prosseguir porque está faltando um dos labels **platform**. Por favor adicione um desses labels: **{{ provided }}**"
+        add_comment: true
+
+    - name: Check scope label
+      uses: mheap/github-action-required-labels@v3
+      with:
+        mode: exactly
+        count: 1
+        labels: ${{ inputs.scope-labels }}
+        message: "Esse PR está sendo impedido de prosseguir porque está faltando um dos labels **scope**. Por favor adicione um desses labels: **{{ provided }}**"
+        add_comment: true
+
+    - name: Check state label
+      uses: mheap/github-action-required-labels@v3
+      with:
+        mode: exactly
+        count: 1
+        labels: ${{ inputs.state-labels }}
+        message: "Esse PR está sendo impedido de prosseguir porque está faltando um dos labels **state**. Por favor adicione um desses labels: **{{ provided }}**"
+        add_comment: true
 
   update-pr:
     name: Update PR body
     runs-on: ubuntu-latest
     steps:
-      - name: Update PR Body
-        uses: chiaretto/github-action-concat-pr-body@master
-        with:
-          github-token: "${{ secrets.repo-token }}"
-          message: "This pull request generated the following artifacts."
-          replace-last-message: false
+    - name: Update PR Body
+      uses: chiaretto/github-action-concat-pr-body@master
+      with:
+        github-token: "${{ secrets.repo-token }}"
+        message: "This pull request generated the following artifacts."
+        replace-last-message: false

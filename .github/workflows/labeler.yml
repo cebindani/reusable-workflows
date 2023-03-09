@@ -13,12 +13,12 @@ on:
       config-path:
         required: true
         type: string
+
     secrets:
       repo-token:
         required: true
 
 jobs:
-
   do-something-else:
     runs-on: ubuntu-latest
 
@@ -34,5 +34,6 @@ jobs:
     - name: Labeler
       uses: actions/labeler@v4.0.3
       with:
-        repo-token: ${{ secrets.token }}
+        repo-token: ${{ secrets.repo-token }}
         configuration-path: ${{ inputs.config-path }}
+        sync-labels: true
