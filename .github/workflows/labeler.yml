@@ -14,10 +14,17 @@ on:
         required: true
         type: string
     secrets:
-      token:
+      repo-token:
         required: true
 
 jobs:
+
+  do-something-else:
+    runs-on: ubuntu-latest
+
+    steps:
+    - run: echo "Hello v1.0.0"
+
   add-label:
     runs-on: ubuntu-latest
     steps:
