@@ -1,0 +1,54 @@
+name: "Dependency Insight"
+
+on:
+  workflow_dispatch:
+    inputs:
+      dependency:
+        description: "dependencia a ser buscada"
+        required: true
+        type: string
+      configuration:
+        description: "Default: masterRuntimeClasspath"
+        required: false
+        type: string
+        default: "masterRuntimeClasspath"
+      build-java-version:
+        description: "java version"
+        required: false
+        type: string
+        default: "11"
+      build-gradle-version:
+        description: "gradle version"
+        required: false
+        type: string
+        default: "6.9"
+      build-distribution:
+        description: "java build version"
+        required: false
+        type: string
+        default: "zulu"
+
+jobs:
+  dependency-insight:
+    name: "Dependency Insight"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: ${{ inputs.build-distribution}}
+          java-version: ${{inputs.build-java-version}}
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: ${{inputs.build-gradle-version}}
+
+      - name: Execute dependency-insight
+        env: 
+          DEPENDENCY: ${{inputs.dependency}}
+          CONFIGURATION: ${{inputs.configuration}}
+        run: |
+          echo "DEPENDENCY: $DEPENDENCY \\nCONFIGURATION: $CONFIGURATION"
+          ./gradlew app:dependencyInsight --dependency $DEPENDENCY --configuration $CONFIGURATION -q
+        shell: bash
