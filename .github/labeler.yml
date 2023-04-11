@@ -1,0 +1,11 @@
+
+# Add 'source' label to any change to
+source:
+  - src/main/java/**
+
+chore:
+  - '.github/**'
+
+missing-changelog-update:
+  - any: [ '*' ]
+    all: [ '!CHANGELOG.md' ]

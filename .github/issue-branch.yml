@@ -1,0 +1,34 @@
+mode: chatops
+
+branchName: 'issue-${issue.number}'
+autoCloseIssue: true
+
+# defaultBranch: 'main'
+
+branches:
+  - label: enhancement
+    prefix: feat/
+  - label: bug
+    prefix: fix/
+  - label: question
+    skip: true
+  - label: chore
+    prefix: chore/
+  - label: '*'
+    prefix: pr/
+
+# openDraftPR: true
+openPR: true
+
+copyIssueLabelsToPR: true
+copyIssueAssigneeToPR: true
+copyIssueProjectsToPR: true
+copyIssueMilestoneToPR: true
+
+# Skip CI workflows
+prSkipCI: true
+
+# Enable Conventional Pull Request titles
+# conventionalPrTitles: true
+
+commentMessage: 'Branch [${branchName}](../tree/${branchName}) created for this issue. Please checkout branch to start work!'
