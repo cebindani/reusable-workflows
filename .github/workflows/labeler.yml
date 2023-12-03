@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Github Actions Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Labeler
       uses: actions/labeler@v4.3.0
